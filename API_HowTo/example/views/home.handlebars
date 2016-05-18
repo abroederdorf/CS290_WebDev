@@ -1,0 +1,46 @@
+<div id="pageDiv">
+	<div id="topDiv">
+		<h1>Seattle City Building Permits</h1>
+		<p>Input the filter options below:</p>
+	</div>
+	<div id="formDiv">
+		<form method="post">
+			<fieldset>
+				<legend>Search Options</legend>
+				<p>Type: <input type="text" name="type"></p>
+				<p>Category: <input type="text" name="category"></p>
+				<p>Status: <input type="text" name="stat"></p>
+				<p>Minimum Value: <input type="number" name="valueGT"></p>
+				<p>Maximum Value: <input type="number" name="valueLT"></p>
+				<input type="submit" name="searchExt" value="Search with Extension">
+				<input type="submit" name="searchHead" value="Search with Header">
+			</fieldset>
+		</form>
+	</div>
+	<div id="tableDiv">
+		{{#if results}}
+			<table>
+				<tr>
+					<th>Type</th>
+					<th>Address</th>
+					<th>Category</th>
+					<th>Value</th>
+					<th>Status</th>
+					<th>Issue Date</th>
+					<th>Description</th>
+				</tr>
+				{{#each results}}
+				<tr bgcolor="{{statusColor}}">
+					<td>{{this.type}}</td>
+					<td>{{this.address}}</td>
+					<td>{{this.category}}</td>
+					<td>{{this.value}}</td>
+					<td>{{this.stat}}</td>
+					<td>{{this.issueDate}}</td>
+					<td>{{this.description}}</td>
+				</tr>
+				{{/each}}
+			</table>
+		{{/if}}
+	</div>
+</div>

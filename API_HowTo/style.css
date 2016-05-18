@@ -1,0 +1,123 @@
+/************* Element Styles *************/
+p {
+	text-align: justify;
+	font-family: sans-serif;
+	line-height: 150%;
+}
+
+span {
+	text-align: justify;
+	font-family: sans-serif;
+	line-height: 150%;
+}
+
+ul {
+	font-family: sans-serif;
+	line-height: 150%;
+}
+
+h1 {
+	font-family: sans-serif;
+}
+
+h3 {
+	font-family: sans-serif;
+}
+
+h4 {
+	font-family: sans-serif;
+}
+
+img {
+	border: solid 2px;
+}
+
+caption {
+	font-family: sans-serif;
+}
+
+/************* Class Styles *************/
+.tabBut{
+	text-align: center;
+	background-color: white;
+	border-top: solid 1px;
+	border-left: solid 1px;
+	border-right: solid 1px;
+	border-radius: 5px;
+}
+
+.nextPage{
+	text-align: center;
+	padding: 3px;
+	margin: 5px;
+}
+
+.infoDivs{
+	max-width: 800px;
+	margin: auto;
+}
+
+.codeInline{
+	background-color: #FFF8C6;
+	color: #E41B17;
+	font-family: sans-serif;
+}
+
+.codeBlock{
+	background-color: #FFF8C6;
+	color: #413839;
+	font-family: sans-serif;
+	font-size: 83%;
+	width: 88%;
+	margin-left: 25px;
+	border-radius: 5px;
+	border: solid 1px;
+	padding: 5px;
+	line-height: 125%;
+}
+
+.accordion {
+	border-radius: 5px;
+	border: solid 1px gray;
+	width: 740px;
+	margin-left: 25px;
+	padding: 10px;
+}
+
+.expDiv{
+	width: 710px;
+	margin-left: 25px;
+}
+
+.toggle{
+	border-radius: 5px;
+}
+
+.tab{
+	white-space: pre;
+}
+
+/************* ID Styles *************/
+#topContainer{
+	max-width: 800px;
+	margin: auto;
+	border-bottom: solid 1px;
+}
+
+#subtitle{
+	font-style: italic;
+	font-weight: lighter;
+}
+
+#myName{
+	font-weight: lighter;
+	font-family: sans-serif;
+	font-size: 90%;
+}
+
+#footer{
+	max-width: 800px;
+	margin: auto;
+	border-top: solid 1px;
+	margin-top: 10px;
+}

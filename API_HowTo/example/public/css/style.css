@@ -1,0 +1,27 @@
+th {
+	border: solid 1px;4
+	padding-left: 5px;
+	padding-right: 5px;
+	background-color: lightblue;
+}
+
+td {
+	border: solid 1px;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: center;
+}
+
+table {
+	border-spacing: 0px;
+	border: solid 1px;
+}
+
+#pageDiv{
+	max-width: 900px;
+	margin: auto;
+}
+
+#tableDiv{
+	margin-top: 20px;
+}

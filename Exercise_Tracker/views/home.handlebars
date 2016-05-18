@@ -1,0 +1,55 @@
+<div id="pageDiv">
+	<h1>Exercise Tracker</h1>
+	<p>Welcome to your excercise tracker! You can use the form below to add new activities and you can view all of your activities in the table. From the table you can select to update or delete activities as well.</p>
+	<button type=button id="startDB">Start New Tracker</button>
+	<fieldset>
+		<legend><h4>Add New Activity</h4></legend>
+		<p>Name: <input type="text" id="name"> (name of exercise)</p>
+		<p>Repetitions: <input type="number" id="reps"> (the number of times the exercise was performed)</p>
+		<p>Weight: <input type="number" id="weight"> (total weight used)</p>
+		<p>Date: <input type="text" id="activityDate"> (date the activity took place)</p>
+		<fieldset>
+			<legend>Unit of Weight</legend>
+			<label><input type="radio" name="unit" id="unit0" value="0">kilograms</label>
+			<label><input type="radio" name="unit" id="unit1" value="1">pounds</label>
+		</fieldset>
+		<button type=button id="submitData" class="button">Submit</button>
+	</fieldset>
+	<div id="updateForm">
+		<fieldset>
+			<legend><h4>Update Row</h4></legend>
+			<p>
+				<input type="hidden" id="hiddenID">
+				<label>Name: <input type="text" id="nameUp"></label>
+				<label>Repetitions: <input type="number" id="repsUp"></label>
+			</p>
+			<label>Weight: <input type="number" id="weightUp"></label>
+			<label>Date: <input type="text" id="activityDateUp"></label>
+			<fieldset>
+				<legend>Unit of Weight</legend>
+				<label><input type="radio" name="unitUp" id="unitUp0" value="0">kilograms</label>
+				<label><input type="radio" name="unitUp" id="unitUp1" value="1">pounds</label>
+			</fieldset>
+			<button type=button id="submitUpdate" class="button">Submit</button>
+			<button type=button id="closeUpdate" class="button">Close Form</button>
+		</fieldset>
+	</div>
+	<div>
+		<p> Status: <span id="statusMsg"></span></p>
+	</div>
+	<table id="dataTable">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Reps</th>
+				<th>Weight</th>
+				<th>Units</th>
+				<th>Date</th>
+				<th>Update?</th>
+				<th>Delete?</th>
+			</tr>
+		</thead>
+		<tbody id="tableBody">
+		</tbody>
+	</table>
+</div>

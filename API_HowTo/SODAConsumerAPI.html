@@ -1,0 +1,492 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>How-To: SODA Consumer API</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<div id="topContainer">
+			<h1>How-To Guide for using the SODA Consumer API</h1>
+			<h3 id="subtitle">Implementation with City of Seattle Data: Current Building Permits</h3>
+			
+			<div id="tabButtons">
+				<button type="button" id="homeTab" class="tabBut">Home</button>
+				<button type="button" id="startTab" class="tabBut">Getting Started</button>
+				<button type="button" id="reqTab" class="tabBut">Requests</button>
+				<button type="button" id="respTab" class="tabBut">Response Data</button>
+			</div>
+			
+		</div>
+		
+		<!-- Home Content-->
+		<div id="homeDiv" class="infoDivs">
+			<p>Welcome to this how-to guide for using the <a href="https://dev.socrata.com/consumers/getting-started.html">SODA Consumer API</a>. SODA, or Socrata Open Data API, provides an easy to use interface for consumers of open data resources  from governments, non-profit organizations, and NGOs hosted by Socrata. There are numerous datasets available for infrastructure, housing and development, finance, politics, education, public safety, transportation, and health.</p>
+			<p>This how-to guide will step through the process of getting started, requesting data, and handling the response. This guide includes the following sections:
+				<ul>
+					<li>Getting Started
+						<ul>
+							<li>Registering for an App Key</li>
+							<li>Locating Data Sets</li>
+							<li>Getting the API Endpoint</li>
+						</ul>
+					</li>
+					<br>
+					<li>Request
+						<ul>
+							<li>Requests in Node.js</li>
+							<li>Creating a Query String</li>
+							<li>Using a URL Extension</li>
+							<li>Using a Header</li>
+						</ul>
+					</li>
+					<br>
+					<li>Response Data
+						<ul>
+							<li>Displaying the Results in a Table</li>
+							<li>Handling the Response</li>
+						</ul>
+					</li>
+				</ul>
+			</p>
+			<p>The implementation example uses the dataset for current building permits from the Seattle city government. The code examples use an application created using the express framework in Node.js and request the data response in JSON. The intention of the examples is to show how to build various queries for requests and then use the response data to display meaningful information.</p>
+			
+			<!-- Next page button -->
+			<button type="button" id="homeNext" class="nextPage">Next Page: Getting Started</button>
+		</div>
+		
+		<!-- Start Content-->
+		<div id="startDiv" class="infoDivs">
+			<!-- Section 1: Registering for an App Key -->
+			<section id="startAppKey">
+				<h3>Registering for an App Key</h3>
+				<p>To get started using the SODA Consumer API, it is suggested you create a Socrata <a href="https://opendata.socrata.com/login">account</a> and register your application to get an app token. The app token provides you with up to 1000 requests in a rolling hour period instead of being limited within the general pool of requests. Once you have created your Socrata account, you can register you application to get your personal app token. You'll need to provide a name and description for your application, with other optional information including the organization, website, callback prefix, and public status. The image below is the application registration for the example implementation with current building permits from the City of Seattle, with the app token redacted and the secret key hidden.
+				<br>
+				<center>
+					<img width=800 height=367 src="images/AppApplication.jpg">
+				</center>
+				<caption>Socrata user acount screen showing registered applications with app token redacted</caption>
+				</p>
+			</section>
+			
+			<hr>
+			
+			<!-- Section 2: Locating Data Sets -->
+			<section id="startDataSets">
+				<h3>Locating Data Sets</h3>
+				<p>Once you have your account setup, the next step is to find the dataset of interest. There are several ways to do this.</p>
+				<div class="accordion">
+					<span><button onclick="toggle('directSearch')" class="toggle">+</button> <strong>Direct Search</strong></span>
+					<div id="directSearch" class="expDiv">
+						<p>The first method is to search for the organization of interest directly. A search for "City of Seattle Data" results in the <a href="https://data.seattle.gov/">open data page</a> for the City of Seattle. You can peruse all of the allowable datasets for the city, and also access the SODA Consumer API by following the link for developers.</p>
+					</div>
+				</div>
+				<div class="accordion">
+					<span><button onclick="toggle('SocOpenData')" class="toggle">+</button> <strong>Socrata Open Data</strong></span>
+					<div id="SocOpenData" class="expDiv">
+						<p>Another method utilizes <a href="https://opendata.socrata.com/dataset/Socrata-Customer-Spotlights/6wk3-4ija">Socrata Open Data</a> which provides a table of the available datasets. You can filter by attributes such as type, customer name, launch date, and country. This will take you to the corresponding open data site for the entity you choose. From there, as with the direct search, you can look at the available datasets and navigate to find the developers page which will most likely include the SODA Consumer API.</p>
+					</div>
+				</div>
+				<div class="accordion">
+					<span><button onclick="toggle('OpenDataNet')" class="toggle">+</button> <strong>Open Data Network</strong></span>
+					<div id="OpenDataNet" class="expDiv">
+						<p>The last method uses the <a href="http://www.opendatanetwork.com/search">Open Data Network</a>. The Open Data Network search contains several filter options including keyword search, filtering by data category, and/or filtering by the data publisher. These filters are highlighted in green in the image below. Each result has a direct link to the API documentation page which includes the API endpoint along with the data fields available with the dataset. The link is highlighted in orange in the image below.
+						<br>
+						<center>
+							<img width=660 height=546 src="images/Search.jpg">
+						</center>
+						<caption>View of the Open Data Network search page with search and filter parameters highlighted, along with the API link</caption>
+						</p>
+					</div>
+				</div>
+			</section>
+			
+			<hr>
+			
+			<!-- Section 3: Getting the API Endpoint -->
+			<section id="startAPIEndPt">
+				<h3>Getting the API Endpoint</h3>
+				<p>The API Endpoint is needed to create the request queries. There are a couple of options for finding it. If you used the Open Data Network to find your dataset, the API documentation page lists it next to a small gear, as seen in the image below. From this page you can also access the original dataset through the organization's website. In this example, you can access the Seattle API near the top of the page, as highlighted in green.
+				<br>
+				<center>
+					<img src="images/APIEndpoint.jpg">
+				</center>
+				<caption>The API documentation page with the API endpoint highlighted in red</caption>
+				</p>
+				<p>If you used the direct search to find your dataset, there is a SODA API section listed under export. The API endpoint is listed in this section, as highlighted in red in the image below.
+				<br>
+				<center>
+					<img width=800 height=457 src="images/APIEndpoint_DataSet.jpg">
+				</center>
+				<caption>View of the dataset, showing the API endpoint located within the Export section</caption>
+				</p>
+			</section>
+			
+			<!-- Next page button -->
+			<button type="button" id="startNext" class="nextPage">Next Page: Requests</button>
+		</div>
+		
+		<!--Request Content -->
+		<div id="reqDiv" class="infoDivs">			
+			<p>People use the SODA Consumer API to get data from open datasets. You get this data by making GET requests using either a URL extension or through the request header. For the implementation example, <a href="https://nodejs.org/en/">Node.js</a> is used to create an application to make requests using the SODA Consumer API to get data about the current building permits in Seattle and then display the results. 
+			</p>
+			
+			<hr>
+			
+			<!--Section 1: Requests with Node.js -->
+			<section id="NodeJS">
+				<h3>Requests with Node.js</h3>
+				<section id="modules">
+					<h4>Express Framework</h4>
+					<p>For the application in Node.js, the <a href="http://expressjs.com/">express</a> framework is used. A brief explanation about the application built using the <span class="codeInline">express</span> framework is needed to understand the code used in this guide to make requests and handle the response data. Several modules are used including:
+					<ul>
+						<li><span class="codeInline">express-handlebars</span>: Template system used to create views to display dynamic data (<a href="https://www.npmjs.com/package/express-handlebars">more information</a>)</li>
+						<li><span class="codeInline">body-parser</span>: Middleware used to parse URL encoded forms and JSON data to extract data from the requests made (<a href="https://www.npmjs.com/package/body-parser">more information</a>)</li>
+						<li><span class="codeInline">request</span>: Library used to make HTTP requests in Node.js (<a href="https://www.npmjs.com/package/request">more information</a>)</li>
+					</ul>
+					</p>
+					<p>These modules are included in the application using the following code:</p>
+					<div class="codeBlock">
+						<span>
+							var express = require('express');
+							<br>
+							var app = express();
+							<br>
+							var handlebars = require('express-handlebars').create({defaultLayout: 'main'});
+							<br>
+							var bodyParser = require('body-parser');
+							<br>
+							var request = require('request');
+						</span>
+					</div>
+					<p><span class="codeInline">app</span> is used throughout the application to access features from the express framework, such as handling GET and POST requests. The default layout used is the <span class="codeInline">main</span> layout, as indicated in the code above when including the express-handlebars module. This is a simplistic layout, including a dynamic body to be replaced by the handlebar template views. <span class="codeInline">request</span> is used to make the HTTP requests to the SODA Consumer API. The <span class="codeInline">request(options, callback)</span> function includes an argument for options and one for the callback. These will be discussed in more depth in the sections discussing requests using either the URL extension method or the header method.</p>
+					<p>The app token is kept in a separate file to keep this important information hidden. In this instance the separate file is named apiKeys.js and is included as a module in the application. The content of the apiKeys.js file is as follows:
+					</p>
+					<div class="codeBlock">
+						<span>
+							module.exports = {
+							<br><span class="tab">    </span>seaData: 'YourKeyHere',
+							<br><span class="tab">    </span>owmKey: 'AnotherKeyHere'
+							<br>}
+						</span>
+					</div>
+					<p>As seen in the code above, there are two API keys listed in this file separated by a comma. The one for use with the Seattle city data application is the one denoted as <span class="codeInline">seaData</span>. To include this file in the application, <span class="codeInline">var apiKeys = require('./apiKeys.js');</span> is used. Then throughout the application, the API key for the Seattle city data can be accessed from the included module using <span class="codeInline">apiKeys.seaData</span>. Note that the apiKeys.js file is included in the root directory of the application.</p>	
+				</section>
+				<section id="exampleForm">
+					<h4>Example Input Form</h4>
+					<p>For the example implementation using the current building permits in Seattle, a basic form was created in the handlebar template home view to allow a user to specify filter values. For submitting the data, two buttons are also included to make the request using either the URL extension or header. The image below shows the simple form interface.</p>
+					<img src="images/form.jpg">
+					<br><caption>
+					Form used to gather filter data needed to build the query string for the request
+					</caption>
+					<p>As seen in the image above, the form includes input for the permit type, category, status, and value range. The HTML code for this form utilizes input fields of type text, number, and submit.</p>
+					<div class="codeBlock">
+						<span>
+							&lt;form method="post"&gt;
+								<br><span class="tab">    </span>&lt;fieldset&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;legend>Search Options&lt;/legend&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;p&gt;Type: &lt;input type="text" name="type"&gt;&lt;/p&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;p&gt;Category: &lt;input type="text" name="category"&gt;&lt;/p&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;p&gt;Status: &lt;input type="text" name="stat"&gt;&lt;/p&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;p&gt;Minimum Value: &lt;input type="number" name="valueGT"&gt;&lt;/p&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;p&gt;Maximum Value: &lt;input type="number" name="valueLT"&gt;&lt;/p&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;input type="submit" name="searchExt" value="Search with Extension"&gt;
+									<br><span class="tab">    </span><span class="tab">    </span>&lt;input type="submit" name="searchHead" value="Search with Header"&gt;
+									<br><span class="tab">    </span>&lt;/fieldset&gt;
+									<br>&lt;/form&gt;
+						</span>
+					</div>
+					<p>The name of each input field is used to pull information from the request using the body-parser middlware, discussed in more depth in a later section. For example, the name of the minimum value input is <span class="codeInline">valueGT</span>. The submit input creates buttons, with the value attribute being displayed as the text on the button. The form uses the POST method when submitted which is handled in the application using <span class="codeInline">app.post()</span>. Within this function, the request is created and the resulting data is displayed through execution of the callback function of the request. If a GET request is made of the application page, such as when navigating to the page, <span class="codeInline">app.get()</span> is utlized to show the homepage with this form. A table of the results is only shown following a data request made while handling a POST request. This will be discussed in much greater detail on the Response Data page.</p>
+				</section>
+			</section>
+			
+			<hr>
+			
+			<!--Section 2: Creating a Query String -->
+			<section id="reqQueryStr">
+				<h3>Creating a Query String</h3>
+				<p>For using either method to make a request, you must first build the URL with the query components you are interested in. The API documentation page, reached by using the Open Data Network search described in Getting Started, includes an explanation of the fields available in the dataset. The explanation includes the field name, data type, a brief description, and a couple of examples showing it used in either the simple filter or query option. The dataset itself, as accessed using one of the other two search methods or from the link included on the API documentation page, displays the actual data in a table format. Each field is a column. Refer to the actual dataset to understand what values are used for the various fields. This will be necessary information for creating the queries. In the building permits example, a few fields of interest that are used in the queries and results are listed below along with their data type:
+				<ul>
+					<li><strong>permit_type</strong>: text</li>
+					<li><strong>address</strong>: text</li>
+					<li><strong>category</strong>: text</li>
+					<li><strong>value</strong>: money</li>
+					<li><strong>status</strong>: text</li>
+					<li><strong>issue_date</strong>: floating timestamp</li>
+					<li><strong>description</strong>: text</li>
+				</ul>
+				</p>
+				<p>Several components make up the URL used in the GET request made to the SODA Consumer API to find data. They include the API endpoint and query string. If the request is made using the URL extension the result data type and app key are also included, but that will be discussed in that secton.</p>
+				<h4>API Endpoint</h4>
+				<p>At the end of the Getting Started page is a section the describes how to find the API endpoint for your dataset. Each dataset has a built-in SODA API which is accessed using the API endpoint. The endpoint for the current building permit dataset from the city of Seattle is: <span class="codeInline">https://data.seattle.gov/resource/mags-97de</span>. When getting the API Endpoint you may notice it appended with a <span class="codeInline">.json</span>. This indicates the data type requested for the response, which will be discussed in later sections.</p>
+				<h4>Query String</h4>
+				<p>There are several options that can be included in the query string, using either a simple filter or query options. The following examples use a URL extension request which can be typed directly into the browser's address field. The later sections will discuss using the query string with a request made in the express framework application.</p>
+				<div class="accordion">
+					<span><button onclick="toggle('simpleFilter')" class="toggle">+</button> <strong>Simple Filter</strong></span>
+					<div id="simpleFilter" class="expDiv">
+						<p>A simple filter may be used which pairs a field name with the value you are interested in, for example:</p>
+						<div class="codeBlock">
+							<span>
+								https://data.seattle.gov/resource/mags-97de.json?permit_type=construction&category=MULTIFAMILY
+							</span>
+						</div>
+						<p>In this example, the request is made using the URL extension so the <span class="codeInline">.json</span> is included to indicate you want the response data as a JSON object. Following the result data type, a <span class="codeInline">?</span> is included to indicate the start of the query. Following the <span class="codeInline">?</span> the simple filter is included, <span class="codeInline">permit_type=construction &category=MULTIFAMILY</span>. This request will return all those building permits with a type of construction (<span class="codeInline">permit_type=construction</span>) and category of MULTIFAMILY (<span class="codeInline">category=MULTIFAMILY</span>). Several simple filters can be added to the URL by using a <span class="codeInline"> & </span> to join them. Note, in this example, the app key is not present.  This means the request will be part of the general pool of requests and limited as necessary.</p>
+					</div>
+				</div>
+				<div class="accordion">
+					<span><button onclick="toggle('queryOptions')" class="toggle">+</button> <strong>Query Options</strong></span>
+					<div id="queryOptions" class="expDiv">
+						<p>The SODA Consumer API provides great query functionality using the <a href="https://dev.socrata.com/docs/queries/">Socrata Query Language</a> (SoQL), which is similar to SQL. The documentation provided on the SODA website provides examples of using each of the options, so a brief description of the few options used in the example is included here, including an example showing how to combine several options in one query as that is not explicitly shown on the SODA website.
+						<ul>
+							<li><span class="codeInline">$select</span>: This allows you to select the fields, or columns, to be returned in the response data.</li>
+							<li><span class="codeInline">$where</span>: This allows you to filter the rows. This goes beyond the simple filter which looks for one value but lets you look for values in a potential range, such as greater than or less than or a combination of the two.</li>
+							<li><span class="codeInline">$order</span>: This allows you to order the rows of data returned in the response data.</li>
+						</ul>
+						</p>
+						<p>
+						The following code shows a URL request including several query options, which will be discussed following the code. The <span class="codeInline">.json</span> is included at the end of the API endpoint to indicate the data type of the response and the <span class="codeInline">?</span> is included next to indicate the start of the query. Also note that the app key is not included, so this request is made from the general pool of requests which may be subject to throttling.
+						</p>
+						<div class="codeBlock">
+							<span>
+								https://data.seattle.gov/resource/mags-97de.json?permit_type=Construction&category=MULTIFAMILY&
+								<br>$where=value&gt;500000+AND+value&lt;502000&$order=issue_date+DESC&
+								<br>$select=permit_type,address,category,value,status,description
+							</span>
+						</div>
+						<p>As with the simple filter, a <span class="codeInline"> & </span> is used to join several query options such as <span class="codeInline">$where</span>, <span class="codeInline">$order</span>, and <span class="codeInline">$select</span>. The first part of the query resembles the simple filter, <span class="codeInline">permit_type=Construction &category=MULTIFAMILY</span>, and is good to use when looking for one specific value of a field such as construction for the permit type. This is then joined with the <span class="codeInline">$where</span> option to include additional filters based on a range. In this case, those permits with a value greater than $500,000 and less than $502,000 are requested. To join the two ranges, note that the word <span class="codeInline">AND</span> is included, similar to SQL, and to perserve the URL encoding a <span class="codeInline">+</span> is used on either side for spaces. Next the <span class="codeInline">$order</span> option is included. This displays the results ordered by permit issue date in descending order, meaning the newest permits will be displayed in the first rows. Finally, the <span class="codeInline">$select</span> option is included to request the specific fields of data for the response. As with the current building permits dataset, there are 25 different fields. If you are only interested in 5 of those fields, the <span class="codeInline">$select</span> option will let you specify those to make the response data easier to work with.</p>
+					</div>
+				</div>
+				<h4>Getting Request Data from Form</h4>
+				<p>To build the query string a form may be used to gather the filter parameters, as seen in the image above. In the building permit example, a series of conditional if-statements are used to build the query string, concatenating the terms and values if they are provided in the form. A snippet of these if-statements in JavaScript is listed below for the first three input fields for permit type, category, and status</p>
+				<div class="codeBlock">
+					<span>
+						var reqStr = "?";
+						<br>if (req.body.type != "")
+							<br><span class="tab">    </span>reqStr += ('&permit_type=' + req.body.type);
+						<br>if (req.body.category != "")
+							<br><span class="tab">    </span>reqStr += ('&category=' + req.body.category);
+						<br>if (req.body.stat != "")
+							<br><span class="tab">    </span>reqStr += ('&status=' + req.body.stat);
+					</span>
+				</div>
+				<p>The query string, <span class="codeInline">reqStr</span> initially includes a <span class="codeInline">?</span> as this indicates the start of the query. If the input field is not empty as tested in each if-statement, for example <span class="codeInline">if (req.body.type != "")</span>, then the field name <span class="codeInline">&permit_type=</span> is added to the string along with the value of that type. The body-parser middlware is used to get the value from the request, as seen using the <span class="codeInline">req.body</span> appended with the name of the input field. If the user enters <em>construction</em> for the permit type in the form, then the value of <span class="codeInline">req.body.type</span> is construction.</p>
+				<p>This code used to build the query string is located within the function of the application handler for a POST request, which looks like <span class="codeInline">app.post('/', function(req, res){...});</span>. As seen in this code, <span class="codeInline">req</span> is the name given to the argument for the request and <span class="codeInline">res</span> is the name given to the argument for the response.
+				</p>
+			</section>
+			
+			<hr>
+			
+			<!--Section 3: Using a URL Extension -->
+			<section id="reqURLExt">
+				<h3>Using a URL Extension</h3>
+				<p>Using a URL extension request means that all of the pertinent data is included in the URL itself. This could be directly typed into the browser's address field and a page showing the results of the response will appear. However, to display the results in a more meaningful way in a table with selected fields, the request is made within the application so that the callback function can be used to handle the response. 
+				</p>
+				<p>The first step to making a request using the URL extension is to create the URL. This is comprised of the API endpoint, response data type, query string, and finally the app key. The response data types available for the current building permits in the city of Seattle include JSON, XML, and CSV, as found on the API documentation page. For the examples JSON is used. Following the methodology outlined above for getting the filter parameters from a form, the query string is built using the data entered by the user. The query string should include all simple filters, <span class="codeInline">$where</span>, <span class="codeInline">$order</span>, and <span class="codeInline">$select</span> options. Finally, the app key is appended to the URL. Here are the parts of the URL listed separately:
+				<ul>
+					<li>API Endpoint: <span class="codeInline">https://data.seattle.gov/resource/mags-97de</span></li>
+					<li>Result Data Type: <span class="codeInline">.json</span></li>
+					<li>Query String: <span class="codeInline">reqStr = '?permit_type=Construction&category=MULTIFAMILY&$where=value&gt;500000+AND +value&lt;502000&$order=issue_date+DESC'</span></li>
+					<li>App Key: <span class="codeInline">'&$$app_token=' + apiKeys.seaData</span></li>
+				</ul>
+				</p>
+				<p>As mentioned above, the <span class="codeInline">request(options, callback)</span> function includes an options argument and callback argument. For making a request using the URL extension method, the URL is used as the option, while the function <span class="codeInline">getResponse</span> is included for the callback. This function will be discussed in more detail on the Response Data page. The following is example code used to make a request using the URL extension in the application. As seen, the URL is concatenated directly in the <span class="codeInline">request</span> function.
+				</p>
+				<div class="codeBlock">
+					<span>
+						request('https://data.seattle.gov/resource/mags-97de.json?' + reqStr + '&$$app_token=' + apiKeys.seaData, getResponse);	
+					</span>
+				</div>
+			</section>
+			
+			<br>
+			<hr>
+			
+			<!--Section 4: Using a Header -->
+			<section id="reqHead">
+				<h3>Using a Header</h3>
+				<p>Using the header for a request requires building that header object and including it as part of the options argument of the <span class="codeInline">request</span> function. A URL is needed again, however, in this case it only includes the API endpoint and query string. The response data type and app key are included as part of the header object instead. The URL is constructed from the two parts in a similar fashion to the URL extension request. Here are the parts of the URL listed separately:
+				<ul>
+					<li>API Endpoint: <span class="codeInline">https://data.seattle.gov/resource/mags-97de</span></li>
+					<li>Query String: <span class="codeInline">reqStr = '?permit_type=Construction&category=MULTIFAMILY&$where=value&gt;500000+AND +value&lt;502000&$order=issue_date+DESC'</span></li>
+				</ul>
+				</p>
+				<p>
+				The JavaScript code for an options object is shown below:
+				</p>
+				<div class="codeBlock">
+					<span>
+						var options = {
+						<br><span class="tab">    </span>url: 'https://data.seattle.gov/resource/mags-97de' + reqStr,
+						<br><span class="tab">    </span>headers: {
+						<br><span class="tab">    </span><span class="tab">    </span>'Accept': 'application/json',
+						<br><span class="tab">    </span><span class="tab">    </span>'X-App-Token': apiKeys.seaData
+						<br><span class="tab">    </span>}
+						<br>};
+					</span>
+				</div>
+				<p>
+				An <span class="codeInline">options</span> object is created to store the URL and header for the request. The URL is listed first, being concatenated here. The URL ends with a comma, then the <span class="codeInline">headers</span> object is listed. The <span class="codeInline">headers</span> object consists of the <span class="codeInline">'Accept'</span> key which has a correpsonding value that represents the data type of the response, in this example <span class="codeInline">'application/json'</span>. The second key, <span class="codeInline">'X-App-Token'</span>, is for the app key and correspondingly has the app token, <span class="codeInline">apiKeys.seaData</span> for its value. Once the <span class="codeInline">options</span> object is created and defined, it is used directly in the <span class="codeInline">request</span> function as follows with the callback function <span class="codeInline">getResponse</span>:
+				</p>
+				<div class="codeBlock">
+					<span>
+						request(options, getResponse);
+					</span>
+				</div>
+				<br>
+			</section>
+			<!-- Next page button -->
+			<button type="button" id="reqNext" class="nextPage">Next Page: Response Data</button>
+		</div>
+		
+		<!-- Response Data Content -->
+		<div id="respDiv" class="infoDivs">
+			<p>The callback function <span class="codeInline">getResponse</span> that is included as an argument in the <span class="codeInline">request</span> function contains all of the JavaSCript code to handle the response received from the request. The nature of the callback is to call the provided function and execute that code once the response has been received. It is important to include all procedures involving the response data in this callback, otherwise if the response takes some time, there will not be data to use with those procedures and no results will be displayed. This section will decribe the handlebar template used to display the results, followed by an indepth discussion of the callback function itself.</p>
+			
+			<hr>
+			
+			<!--Section 1: Displaying the Results in a Table -->
+			<section id="dataTable">
+				<h3>Displaying the Results in a Table</h3>
+				<p>The home.handlebars view that included the form discussed on the Requests page also includes the code needed to display the results in a table. For the building permits example the fields selected for the table include permit type, address, category, value, status, permit issue date, and the description. The code for this table is as follows:
+				</p>
+				<div class="codeBlock">
+					<span>
+						{{#if results}}
+						<br><span class="tab">    </span>&lt;table>
+						<br><span class="tab">    </span><span class="tab">    </span>&lt;tr>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Type&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Address&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Category&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Value&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Status&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Issue Date&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;th>Description&lt;/th>
+						<br><span class="tab">    </span><span class="tab">    </span>&lt;/tr>
+						<br><span class="tab">    </span><span class="tab">    </span>{{#each results}}
+						<br><span class="tab">    </span><span class="tab">    </span>&lt;tr bgcolor="{{statusColor}}">
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.type}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.address}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.category}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.value}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.stat}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.issueDate}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>&lt;td>{{this.description}}&lt;/td>
+						<br><span class="tab">    </span><span class="tab">    </span>&lt;/tr>
+						<br><span class="tab">    </span><span class="tab">    </span>{{/each}}
+						<br><span class="tab">    </span>&lt;/table>
+						<br>{{/if}}
+					</span>
+				</div>
+				<p>The values enclosed in double curly braces, such as <span class="codeInline">{{this.type}}</span> indicate an item that will be populated dynamically with the content passed through the <span class="codeInline">render</span> function. The last statement of the callback function, assuming an error response code is not received, renders a new page using <span class="codeInline">res.render('home', content);</span> where <span class="codeInline">'home'</span> is the name of the handlebar template view to show and <span class="codeInline">content</span> contains data to be used in that view. As will be explained in the next section, the <span class="codeInline">content</span> object contains a <span class="codeInline">results</span> array of objects. This name matches with <span class="codeInline">{{#if results}}</span> used in the <span class="codeInline">'home'</span> view. If the <span class="codeInline">results</span> array is not empty, the table is created and each element of the array is iterated through using <span class="codeInline">{{#each results}}</span>. <span class="codeInline">this</span> refers to the current element of the array and pulls the value for the specified key from the object in the element. For example, <span class="codeInline">{{this.type}}</span> will display the value of <span class="codeInline">type</span> from the array element object. The image below shows the results as populated in the table for the indicated filter parameters:</p>
+				<img width=800 height=584 src="images/results.jpg">
+				<br><caption>View of the results table generated following a request made using the form provided.
+				</caption>
+				<p>For reference, the request that was made to result in this data is the following using the URL extension method:</p>
+				<div class="codeBlock">
+					<span>
+						request('https://data.seattle.gov/resource/mags-97de.json?permit_type=Construction&category=MULTIFAMILY& $where=value&gt;500000+AND+value&lt;502000&$order=issue_date+ASC&$$app_token=' + apiKeys.seaData, getResponse);
+					</span>
+				</div>
+			</section>
+			
+			<br>
+			<hr>
+			
+			<!--Section 2: Handling the Response -->
+			<section id="handlingResponse">
+				<h3>Handling the Response</h3>
+				<p>The following sections describe procedures of the callback function <span class="codeInline">getResponse</span>.</p>
+				<h4>Checking the Response Status Code</h4>
+				<p>The prototype for the callback function is <span class="codeInline">function getResponse(err, response, body)</span>. The first task accomplished in this function is checking if the status code is less than 400, indicating a successful request and response. If it is 400 or greater, an error occured. To check for an error code, the conditional statement <span class="codeInline">if (!err && response.statusCode &lt; 400)</span> is used. If there is no error in the <span class="codeInline">err</span> argument and the <span class="codeInline">statusCode</span>, which is a key in the <span class="codeInline">response</span> object, is less than 400, the remaining statements are executed to render the <span class="codeInline">home</span> view with the resulting data. If this conditional statement is false, a corresponding view with an error code is rendered instead. The SODA Consumer API has a good listing of the possible <a href="https://dev.socrata.com/docs/response-codes.html">response status codes</a> and what they mean in the provided documentation.
+				</p>
+				<h4>Parsing the Data</h4>
+				<p>The first step in handling the response data is to parse it.  As an example, this can be accomplished using <span class="codeInline">var searchResults = JSON.parse(body);</span>. This parses the <span class="codeInline">body</span> argument containing the response data into a JSON object so that the fields, represented as keys, can be accessed to determine their corresponding value. In the function called for <span class="codeInline">app.post()</span>, an empty content object, <span class="codeInline">var content = {};</span> and an empty results array, <span class="codeInline">var results = [];</span> are created. The data from the response will be added to these, and then used to render the view. The <span class="codeInline">results</span> array is an array of objects that contain the key-value pairs needed to populate the view, as shown above. Any key represented by <span class="codeInline">{{this.key}}</span> should be included in the object added to the <span class="codeInline">results</span> array.
+				</p>
+				<p> The response body may include any number of data rows. To iterate through them all, a for in loop is used, <span class="codeInline">for (var item in searchResults)</span>, where <span class="codeInline">item</span> represents the current index. Remember the parsed response data was assigned to <span class="codeInline">searchResults</span>. The first task within the for loop is to determine the background color for in row based on the permit status. If the permit has been issued, the background color of the row is set to green (#7FE817), otherwise it is red (#F75D59). The conditional statements in JavaScript used to determine the color are included below:
+				</p>
+				<div class="codeBlock">
+					<span>
+						var color;
+						<br>if (searchResults[item].status == "Permit Issued")
+						<br><span class="tab">    </span>color = '#7FE817';
+						<br>else 
+						<br><span class="tab">    </span>color = '#F75D59';
+					</span>
+				</div>
+				<p>As mentioned earlier, there are 25 different data fields in the current building permit dataset. Regardless of if the request includes a <span class="codeInline">select</span> option, the fields of interest need to be extracted from the data. Using the following URL extension request,
+				</p>
+				<div class="codeBlock">
+					<span>
+						https://data.seattle.gov/resource/i5jq-ms7b.json?permit_type=Construction&category=MULTIFAMILY& $where=value&gt;500000+AND+value&lt;502000&$order=issue_date+ASC&$select=permit_type,address,category,value, status,description
+					</span>
+				</div>
+				<p>the following response data is received</p>
+				<div class="codeBlock">
+					<span>
+						[{"address":"2311 N 113TH PL","category":"MULTIFAMILY","description":"Construct south 3-unit townhouse per plans. (Establish use as and construct 2 new townhouse structures with attached parking. Review and process for 2 APs under 6355755).","permit_type":"Construction","status":"Permit Issued","value":"500668"}
+						,{"address":"4906 S WILLOW ST","category":"MULTIFAMILY","description":"Construct 3 unit townhouse - building Ithis permit. (Establish use as and construct (8) 3 unit townhouses and (1) 2 unit townhouse, all w/ attached garages, per plans. Review and processing for 9 A/P’s under 6146807)","permit_type":"Construction","status":"Permit Issued","value":"500427"}
+						,{"address":"2366 YALE AVE E","category":"MULTIFAMILY","description":"Addition and alteration to existing 6-unit apartment building.  No changes will be made to the total number of apartments.","permit_type":"Construction","status":"Initial Information Collected","value":"501727"}]
+					</span>
+				</div>
+				<p>Three data rows are returned for this narrow search of the current building permits data, however many searches will produce tens to hundreds of rows, so using the for in loop is necessary as it would be too much data to extract directly. These three rows translate to three elements in <span class="codeInline">searchResults</span>. Each data row represents an iteration in the for in loop. In order to store the required data needed for rendering the <span class="codeInline">home</span> view, an object is created with the key-value pairs of interest and is added to the <span class="codeInline">results</span> array using the array push method. The following code is used to create each object and push it to the <span class="codeInline">results</span> array.
+				</p>
+				<div class="codeBlock">
+					<span>
+						results.push({"type":searchResults[item].permit_type, "address":searchResults[item].address, "category":searchResults[item].category, "value":searchResults[item].value, "stat":searchResults[item].status, "issueDate":searchResults[item].issue_date, "description":searchResults[item].description, "statusColor":color});
+					</span>
+				</div>
+				<p>For each key-value pair, the key corresponds to a key used in the <span class="codeInline">home</span> view presented above. For instance, a pair is made in the object by using <span class="codeInline">"address":searchResults[item].address</span>. The <span class="codeInline">"address"</span> corresponds to the code in the view <span class="codeInline">{{this.address}}</span>. Now that the key name has been established, the value needs to be assigned using <span class="codeInline">searchResults[item].address</span>. Remember that <span class="codeInline">item</span> is the current index in the for in loop. This accesses the corresponding element of <span class="codeInline">searchResults[item]</span> and accesses the value for <span class="codeInline">.address</span> as listed in the response data shown above. This is done for each required key-value pair to create the object, which is then pushed to the <span class="codeInline">results</span> array. As the background color of each row in the table is also specified, this key-value pair also needs to be included in the object pushed to the <span class="codeInline">results</span> array. This is done using <span class="codeInline">"statusColor":color</span>, which uses the <span class="codeInline">color</span> variable assigned earlier using the conditional statements.
+				</p>
+				<p>After the for in loop has concluded, the results array is then added to the content object using <span class="codeInline">content.results = results;</span>. The <span class="codeInline">content</span> object, now that it includes the results data, is then passed to the render function <span class="codeInline">res.render('home', content);</span> along with the view to render, <span class="codeInline">home</span>, which results in a page showing the results table as seen in the image above.
+				</p>
+				<p>The JavaScript code for the <span class="codeInline">getResponse</span> callback function is shown in its entirety below. Note that this function is one part of the overall POST handler, <span class="codeInline">app.post('/', function(req, res){...});</span>. The POST handler also includes all of the code necessary to create and send the request using either method depending on which button is used to submit the form. 
+				</p>
+				<div class="codeBlock">
+					<span>
+						function getResponse(err, response, body){
+						<br><span class="tab">    </span>if (!err && response.statusCode < 400)
+						<br><span class="tab">    </span>{
+						<br><span class="tab">    </span><span class="tab">    </span>//Extract data from response
+						<br><span class="tab">    </span><span class="tab">    </span>var searchResults = JSON.parse(body);
+						<br>
+						<br><span class="tab">    </span><span class="tab">    </span>//Iterate through data rows of response						
+						<br><span class="tab">    </span><span class="tab">    </span>for (var item in searchResults)
+						<br><span class="tab">    </span><span class="tab">    </span>{
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>//Determine color of row if permit has been issued
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>var color;
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>if (searchResults[item].status == "Permit Issued")
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>color = '#7FE817';
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>else 
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>color = '#F75D59';
+						<br>			
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>//Add data row to array of results
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>results.push({"type":searchResults[item].permit_type, "address":searchResults[item].address,     
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>"category":searchResults[item].category, "value":searchResults[item].value, <br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>"stat":searchResults[item].status, "issueDate":searchResults[item].issue_date, <br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>"description":searchResults[item].description, "statusColor":color});
+						<br><span class="tab">    </span><span class="tab">    </span>}
+						<br><span class="tab">    </span><span class="tab">    </span>content.results = results;
+						<br>		
+						<br><span class="tab">    </span><span class="tab">    </span>//Render page with results
+						<br><span class="tab">    </span><span class="tab">    </span>res.render('home', content);
+						<br><span class="tab">    </span>}
+						<br><span class="tab">    </span>else
+						<br><span class="tab">    </span>{
+						<br><span class="tab">    </span><span class="tab">    </span>console.log(err);
+						<br><span class="tab">    </span><span class="tab">    </span>if (response)
+						<br><span class="tab">    </span><span class="tab">    </span><span class="tab">    </span>console.log(response.statusCode);
+						<br><span class="tab">    </span><span class="tab">    </span>next(err);
+						<br><span class="tab">    </span>}
+						<br>}
+					</span>
+				</div>
+			</section>
+			<br>
+		</div>
+		
+		<!-- Footer Div -->
+		<div id="footer">
+			<span id="myName" class="tab">[ Alicia Broederdorf  |  CS 290  |  November 2015 ]   </span>
+		</div>
+			
+		<!-- Script for tabs -->
+		<script src="tabScript.js"></script>
+	</body>
+</html>
