@@ -1,2 +1,2 @@
-# CS290_WebDev
+# WebDev
 Projects and assignments for web development class
